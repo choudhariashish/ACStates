@@ -23,7 +23,7 @@ public:
 
     TransitionCode()
     {
-	}
+    }
 
     virtual int execute()
     {
@@ -58,7 +58,7 @@ public:
     {
         mName = name;
         mInitialChild = NULL;
-	}
+    }
 
     void addInitialChild(State *state)
     {
@@ -94,12 +94,12 @@ public:
     void setInitialState(State *state)
     {
         mCurrState = state;
-	}
+    }
 
     State *getCurrentState()
     {
         return mCurrState;
-	}
+    }
 
     void start()
     {
@@ -109,7 +109,7 @@ public:
     void addState(State *state, State *parent=NULL)
     {
         mStateMap[state] = parent;
-	}
+    }
 
     void triggerEvent(int ev)
     {
@@ -133,10 +133,10 @@ public:
                     int stateChangeNeeded = 0;
                     if (NULL != transition->mTransitionCode)
                     {
-				        if (1==transition->mTransitionCode->execute())
+                        if (1==transition->mTransitionCode->execute())
                         {
                             stateChangeNeeded = 1;
-						}
+                        }
                     }
 
                     /// Check if we need to change state.
@@ -165,7 +165,7 @@ public:
             int stateChangeNeeded = 0;
             if (NULL != transition->mTransitionCode)
             {
-				if (1==transition->mTransitionCode->execute())
+                if (1==transition->mTransitionCode->execute())
                 {
                     stateChangeNeeded = 1;
                 }
@@ -188,18 +188,18 @@ public:
                     return;
                 }
 
-				/// Check if the state we are about to enter is mCurrState's child/subchild.
-				/// If yes, then we do not have to exit this state.
-				State *curr = transition->mState;
+                /// Check if the state we are about to enter is mCurrState's child/subchild.
+                /// If yes, then we do not have to exit this state.
+                State *curr = transition->mState;
 
-				while (curr != NULL)
-				{
-					if (curr==mCurrState)
-					{
-						break;
-					}
-					curr = mStateMap[curr];
-				}
+                while (curr != NULL)
+                {
+                    if (curr==mCurrState)
+                    {
+                        break;
+                    }
+                    curr = mStateMap[curr];
+                }
 
                 if (curr==NULL)
                 {
@@ -207,16 +207,16 @@ public:
                 }
 
 
-				transition->mState->entry();
-				mCurrState = transition->mState;
+                transition->mState->entry();
+                mCurrState = transition->mState;
 
-				/// Check if the state we just entered has a initial
-				/// child state. If yes, then we need to enter that child too.
-				while (mCurrState->mInitialChild != NULL)
-				{
-					mCurrState->mInitialChild->entry();
-					mCurrState = mCurrState->mInitialChild;
-				}
+                /// Check if the state we just entered has a initial
+                /// child state. If yes, then we need to enter that child too.
+                while (mCurrState->mInitialChild != NULL)
+                {
+                    mCurrState->mInitialChild->entry();
+                    mCurrState = mCurrState->mInitialChild;
+                }
             }
         }
     }
