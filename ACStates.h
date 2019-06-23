@@ -1,3 +1,7 @@
+/// StateMachine library.
+/// A quick, simple, lightweight statemachine library in C++ with dependancy
+/// on only std::map.
+
 #ifndef STATEMACHINE_H
 #define STATEMACHINE_H
 
@@ -5,21 +9,14 @@
 #include <map> 
 
 
-class EventCode;
+/// Forward declaration.
+class TransitionCode;
 class Transition;
 class State;
 class StateMachine;
 
 
-enum EVENT
-{
-    CHANGE_INTENSITY,
-    TURN_ON,
-    TURN_OFF,
-    ABORT
-};
-
-
+/// Base class to serve adding transition code.
 class TransitionCode
 {
 public:
@@ -31,10 +28,11 @@ public:
     virtual int execute()
     {
     }
-
 };
 
 
+/// Transition class that is used internally
+/// by statemachine.
 class Transition
 {
 public:
@@ -50,6 +48,7 @@ public:
 };
 
 
+/// Base class for State.
 class State
 {
 
@@ -58,7 +57,13 @@ public:
     State(std::string name)
     {
         mName = name;
+        mInitialChild = NULL;
 	}
+
+    void addInitialChild(State *state)
+    {
+        mInitialChild = state;
+    }
 
     virtual void entry()
     {
@@ -70,18 +75,18 @@ public:
         printf("%s exited\n", mName.c_str());
     }
 
-    void addTransition(EVENT ev, TransitionCode *tc, State *state)
+    void addTransition(int ev, TransitionCode *tc, State *state)
     {
         mStateTransition[ev] = new Transition(tc, state);
     }
 
-
-    std::map<EVENT, Transition*> mStateTransition;
-
+    std::map<int, Transition*> mStateTransition;
     std::string mName;
+    State *mInitialChild;
 };
 
 
+/// StateMachine class
 class StateMachine
 {
 public:
@@ -106,7 +111,7 @@ public:
         mStateMap[state] = parent;
 	}
 
-    void triggerEvent(EVENT ev)
+    void triggerEvent(int ev)
     {
         Transition *transition = mCurrState->mStateTransition[ev];
 
@@ -157,31 +162,70 @@ public:
         }
         else                   ///< Current state handles the event.
         {
+            int stateChangeNeeded = 0;
             if (NULL != transition->mTransitionCode)
             {
 				if (1==transition->mTransitionCode->execute())
                 {
-                    if ( NULL != transition->mState )
-                    {
-		                mCurrState->exit();
-                        transition->mState->entry();
-                        mCurrState = transition->mState;
-                    }
+                    stateChangeNeeded = 1;
                 }
             }
             else if ( NULL != transition->mState )
             {
-                mCurrState->exit();
-                transition->mState->entry();
-                mCurrState = transition->mState;
+                stateChangeNeeded = 1;
             }
-            return;
+
+            if (1==stateChangeNeeded)
+            {
+                /// Check if the state that we are about to enter is self state(loopback)
+                /// If yes, then in this case we need to exit and enter the mCurrState.
+                if (mCurrState==transition->mState)
+                {
+                    mCurrState->exit();
+                    mCurrState->entry();
+
+                    /// We can return here.
+                    return;
+                }
+
+				/// Check if the state we are about to enter is mCurrState's child/subchild.
+				/// If yes, then we do not have to exit this state.
+				State *curr = transition->mState;
+
+				while (curr != NULL)
+				{
+					if (curr==mCurrState)
+					{
+						break;
+					}
+					curr = mStateMap[curr];
+				}
+
+                if (curr==NULL)
+                {
+                    mCurrState->exit();
+                }
+
+
+				transition->mState->entry();
+				mCurrState = transition->mState;
+
+				/// Check if the state we just entered has a initial
+				/// child state. If yes, then we need to enter that child too.
+				while (mCurrState->mInitialChild != NULL)
+				{
+					mCurrState->mInitialChild->entry();
+					mCurrState = mCurrState->mInitialChild;
+				}
+            }
         }
     }
 
 private:
 
     State *mCurrState;
+
+    ///     current  parent
     std::map<State*, State*> mStateMap;
 };
 
