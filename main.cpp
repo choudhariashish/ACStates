@@ -16,7 +16,7 @@ class TransitionCodeChangeIntensity : public TransitionCode
 {
 public:
 
-    int execute()
+    uint8_t execute()
     {
         printf("TransitionCodeChangeIntensity execution\n");
         return 0;   ///< If we return '1' here then statemachine will
