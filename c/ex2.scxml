@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" name="ex1" qt:editorversion="4.11.2">
+    <state id="st_machine" initial="st_operational">
+        <qt:editorinfo scenegeometry="264.04;5.58;41.53;-60.30;372.72;495.17" removedInitial="st_idle" geometry="264.04;5.58;-222.51;-65.88;372.72;495.17"/>
+        <state id="st_operational" initial="st_idle">
+            <qt:editorinfo scenegeometry="137.36;20.71;77.36;27.15;299.72;368.56" geometry="-126.68;15.13;-60;6.44;299.72;368.56"/>
+            <state id="st_running">
+                <qt:editorinfo scenegeometry="392.31;396.60;332.31;317.47;140.52;104.92" geometry="78.35;320.29;-60;-79.13;140.52;104.92"/>
+                <transition type="external" event="EV_STOP" target="st_idle">
+                    <qt:editorinfo movePoint="-16.52;0" startTargetFactors="27.04;5.93" endTargetFactors="22.49;90.04"/>
+                </transition>
+            </state>
+            <state id="st_idle">
+                <qt:editorinfo scenegeometry="402.57;208.15;342.57;158.15;120;100" geometry="88.61;131.84;-60;-50;120;100"/>
+                <transition type="external" event="EV_RUN" target="st_running">
+                    <qt:editorinfo movePoint="28.91;1.03"/>
+                </transition>
+            </state>
+        </state>
+    </state>
+</scxml>

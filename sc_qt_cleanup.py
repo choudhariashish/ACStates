@@ -2,7 +2,6 @@
 
 import os, sys
 import xml.etree.ElementTree as ET
-
 from xml.dom import minidom
 
 
@@ -79,6 +78,7 @@ def ParseState(curr_state, root_state):
 
     return
 
+
 #---------------------------------------------------------------
 # ParseQtScxml
 #---------------------------------------------------------------
@@ -87,17 +87,9 @@ def ParseQtScxml(input_file):
     tree = ET.parse(input_file)
     root = tree.getroot()
 
-    # Any statemachine should always have these following
-    # attributes.
-    root_state = ET.Element("state")
-    root_state.attrib['id'] = root.attrib['name']
-    root_state.attrib['initial'] = root.attrib['initial']
-
-    # We will not have any transition nodes at root level,
-    # but only states.
-    for node in root:
-        if 'state' in node.tag:
-            ParseState(node, root_state)
+    statemachine = root.getchildren()[0]
+    root_state = ET.Element("statemachine")
+    ParseState(statemachine, root_state)
 
     print(PrettyFormat(root_state))
     return root_state

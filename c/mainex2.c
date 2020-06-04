@@ -2,7 +2,7 @@
 
 enum EVENTS
 {
-	EV_DEFAULT_ENTRY         = EV_DEFAULT_ENTRY_LIB,
+    EV_DEFAULT_ENTRY        = EV_DEFAULT_ENTRY_LIB,
     EV_RUN,
     EV_STOP
 };

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" name="ex1" qt:editorversion="4.11.2">
+    <state id="st_machine" initial="st_idle">
+        <qt:editorinfo geometry="266.22;26.29;-222.51;-57.05;305.53;390.17" scenegeometry="266.22;26.29;43.71;-30.76;305.53;390.17"/>
+        <state id="st_idle">
+            <qt:editorinfo geometry="-69.68;69.57;-60;-50;120;100" scenegeometry="14.40;119.60;-45.60;69.60;120;100"/>
+            <transition type="external" event="EV_RUN" target="st_running">
+                <qt:editorinfo movePoint="28.91;1.03"/>
+            </transition>
+        </state>
+        <state id="st_running">
+            <qt:editorinfo geometry="-79.94;251.78;-60;-79.13;140.52;104.92" scenegeometry="4.14;301.81;-55.86;222.68;140.52;104.92"/>
+            <transition type="external" event="EV_STOP" target="st_idle">
+                <qt:editorinfo movePoint="-16.52;0" endTargetFactors="22.49;90.04" startTargetFactors="27.04;5.93"/>
+            </transition>
+        </state>
+    </state>
+</scxml>
