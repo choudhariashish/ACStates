@@ -18,14 +18,7 @@ def PrettyFormat(root):
 
 
 #---------------------------------------------------------------
-# GenerateCode
-#---------------------------------------------------------------
-def GenerateCode(input_file):
-    return
-
-
-#---------------------------------------------------------------
-# ParseQtScxml
+# ParseState
 #---------------------------------------------------------------
 def ParseState(curr_state, root_state):
 
@@ -102,5 +95,4 @@ if __name__=="__main__":
 
     input_file = sys.argv[1]
     state_machine = ParseQtScxml(input_file)
-    GenerateCode(state_machine)
 

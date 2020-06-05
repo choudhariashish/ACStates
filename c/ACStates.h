@@ -113,12 +113,12 @@ void runEntryProcedure( StateMachine_t *sm )
         {
             sm->CurrStateIndex++;
             sm->StateStack[sm->CurrStateIndex] = currState;
-		}
+        }
         else
         {
             break;
         }
-	}
+    }
 }
 
 void runExitProcedure( StateMachine_t *sm, State_t *state )
@@ -131,7 +131,7 @@ void runExitProcedure( StateMachine_t *sm, State_t *state )
         currState->exit(ev);
         sm->CurrStateIndex--;
         currState = sm->StateStack[sm->CurrStateIndex];
-	}
+    }
 }
 
 State_t *getParentThatHandlesEvent(StateMachine_t *sm, UINT16_t eventId)

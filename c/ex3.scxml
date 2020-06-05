@@ -3,24 +3,24 @@
     <state id="st_machine" initial="st_operational">
         <qt:editorinfo scenegeometry="254.85;-145.54;-141.79;-211.42;417.79;587.71" geometry="254.85;-145.54;-396.64;-65.88;417.79;587.71"/>
         <state id="st_operational" initial="st_idle">
-            <qt:editorinfo scenegeometry="-51.55;-26.41;-101.14;-19.97;279.23;332.18" geometry="-306.40;18.42;-49.59;6.44;279.23;332.18"/>
+            <qt:editorinfo scenegeometry="-51.55;-127.12;-101.14;-120.68;279.23;332.18" geometry="-306.40;18.42;-49.59;6.44;279.23;332.18"/>
             <state id="st_running">
-                <qt:editorinfo scenegeometry="26.80;259.47;-33.20;180.34;140.52;104.92" geometry="78.35;285.88;-60;-79.13;140.52;104.92"/>
+                <qt:editorinfo scenegeometry="26.80;158.76;-33.20;79.63;140.52;104.92" geometry="78.35;285.88;-60;-79.13;140.52;104.92"/>
                 <transition type="external" event="EV_STOP" target="st_idle">
                     <qt:editorinfo movePoint="-16.52;0" startTargetFactors="27.04;5.93" endTargetFactors="22.49;90.04"/>
                 </transition>
             </state>
             <state id="st_idle">
-                <qt:editorinfo scenegeometry="37.06;95.57;-22.94;45.57;120;100" geometry="88.61;121.98;-60;-50;120;100"/>
+                <qt:editorinfo scenegeometry="37.06;-5.14;-22.94;-55.14;120;100" geometry="88.61;121.98;-60;-50;120;100"/>
                 <transition type="external" event="EV_RUN" target="st_running">
                     <qt:editorinfo movePoint="28.91;1.03"/>
                 </transition>
             </state>
         </state>
         <state id="st_faulted">
-            <qt:editorinfo scenegeometry="32.02;403.27;-27.98;353.27;120;100" geometry="-222.83;448.10;-60;-50;120;100"/>
+            <qt:editorinfo scenegeometry="32.02;302.56;-27.98;252.56;120;100" geometry="-222.83;448.10;-60;-50;120;100"/>
             <transition type="external" event="EV_FAULT_CLEAR" target="st_operational">
-                <qt:editorinfo movePoint="-53.32;121.47" startTargetFactors="91.90;49.77" localGeometry="149.70;0.01;149.70;-265.62" endTargetFactors="95.57;47.38"/>
+                <qt:editorinfo movePoint="-53.32;121.47" startTargetFactors="91.90;49.77" endTargetFactors="95.57;47.38" localGeometry="149.70;0.01;149.70;-265.62"/>
             </transition>
         </state>
         <transition type="external" event="EV_FAULT" target="st_faulted">
