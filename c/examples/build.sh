@@ -17,11 +17,11 @@ echo 'Building Machine Implementations-----------'
 echo '-------------------------------------------'
 
 echo 'mainex1.c----------------------------------'
-gcc -g mainex1.c -o ex1.out -I ../
+gcc -g mainex1.c -o ex1.out ../*.c -I ../
 echo 'mainex2.c----------------------------------'
-gcc -g mainex2.c -o ex2.out -I ../
+gcc -g mainex2.c -o ex2.out ../*.c -I ../
 echo 'mainex3.c----------------------------------'
-gcc -g mainex3.c -o ex3.out -I ../
+gcc -g mainex3.c -o ex3.out ../*.c -I ../
 
 
 
