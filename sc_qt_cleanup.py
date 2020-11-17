@@ -80,7 +80,10 @@ def ParseQtScxml(input_file):
     tree = ET.parse(input_file)
     root = tree.getroot()
 
-    statemachine = root.getchildren()[0]
+    statemachine = None
+    for child in root:
+        statemachine = child
+
     root_state = ET.Element("statemachine")
     ParseState(statemachine, root_state)
 

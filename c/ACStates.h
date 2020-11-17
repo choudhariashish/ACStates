@@ -16,23 +16,23 @@ typedef unsigned short UINT16_t;
 // }
 
 
+enum EventState
+{
+    EVENT_HANDLED,
+    EVENT_NOT_HANDLED
+};
+typedef enum EventState EventState_t;
+
+
 struct Event
 {
     UINT16_t eventId;
     UINT16_t arg0;
     UINT16_t arg1;
 };
-
 typedef struct Event Event_t;
-typedef void (*FuncPtr_t)(Event_t);
+typedef EventState_t (*FuncPtr_t)(Event_t);
 
-
-enum StateSubroutine
-{
-    ENTRY,
-    INPROGRESS,
-    EXIT
-};
 
 struct State
 {

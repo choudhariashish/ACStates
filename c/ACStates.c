@@ -109,6 +109,7 @@ void triggerEvent(StateMachine_t *sm, Event_t ev)
         sm->StateStack[sm->CurrStateIndex] = nextState;
 
         runEntryProcedure(sm);
+        return;
     }
     else
     {
@@ -121,6 +122,20 @@ void triggerEvent(StateMachine_t *sm, Event_t ev)
             sm->StateStack[sm->CurrStateIndex] = state->ConnectedStates[ev.eventId];
 
             runEntryProcedure(sm);
+            return;
         }
+    }
+
+    // If we reach here then we have to run the inprogress routines of all the states
+    // in the stack till root to see if any state handles this event.
+    State_t *currState = sm->StateStack[sm->CurrStateIndex];
+
+    while (NULL != currState)
+    {
+        if (EVENT_HANDLED == currState->inprogress(ev))
+        {
+            return;
+        }
+        currState = currState->parent;
     }
 }

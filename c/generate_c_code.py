@@ -54,13 +54,13 @@ class SMCode:
 
         for sid in sids:
             print('// '+sid)
-            print('void '+sid+'_entry(Event_t ev)')
+            print('EventState_t '+sid+'_entry(Event_t ev)')
             print('{')
             print('}')
-            print('void '+sid+'_inprogress(Event_t ev)')
+            print('EventState_t '+sid+'_inprogress(Event_t ev)')
             print('{')
             print('}')
-            print('void '+sid+'_exit(Event_t ev)')
+            print('EventState_t '+sid+'_exit(Event_t ev)')
             print('{')
             print('}')
             print('\n')
@@ -169,7 +169,9 @@ def ParseScxml(input_file):
     tree = ET.parse(input_file)
     root = tree.getroot()
 
-    statemachine = root.getchildren()[0]
+    statemachine = None
+    for child in root:
+        statemachine = child
 
     smcode = SMCode()
     ParseState(statemachine, None, smcode)
