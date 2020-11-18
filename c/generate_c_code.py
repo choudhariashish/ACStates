@@ -13,7 +13,7 @@ class State:
         self.sid = ''
         self.parent = []
         self.isInitial = False
-        self.internal = []    # (type, event)
+        self.internal = []    # (type, event, code)
         self.external = []    # (type, event, target)
 
 
@@ -52,13 +52,24 @@ class SMCode:
         print('\n')
 
 
-        for sid in sids:
+        for state in self.states:
+            sid = state.sid
             print('// '+sid)
             print('EventState_t '+sid+'_entry(Event_t ev)')
             print('{')
             print('}')
             print('EventState_t '+sid+'_inprogress(Event_t ev)')
             print('{')
+
+            for inttran in state.internal:
+                print(4*' '+'if (ev.eventId=='+inttran[1]+')')
+                print(4*' '+'{')
+                code = inttran[2]
+                print(8*' '+code.replace('\n', '\n'+8*' '))
+                print(8*' '+'return EVENT_HANDLED;')
+                print(4*' '+'}\n')
+
+            print(4*' '+'return EVENT_NOT_HANDLED;')
             print('}')
             print('EventState_t '+sid+'_exit(Event_t ev)')
             print('{')
@@ -138,7 +149,11 @@ def ParseState(curr_state, parent, smcode):
     # Internal transitions.
     for node in curr_state:
         if 'transition' in node.tag and node.attrib['type'] == 'internal':
-            internals.append( (node.attrib['type'], node.attrib['event']) )
+            code = ""
+            for script in node:
+                if 'script' in script.tag:
+                    code = script.text
+            internals.append( (node.attrib['type'], node.attrib['event'], code) )
 
     # External transitions.
     for node in curr_state:
@@ -151,7 +166,7 @@ def ParseState(curr_state, parent, smcode):
 
     # Create transitions and add to the current state.
     for internal in internals:
-        new_state.internal.append((internal[0], internal[1]))
+        new_state.internal.append((internal[0], internal[1], internal[2]))
         smcode.eventDict[internal[1]] = 1
 
     for external in externals:
