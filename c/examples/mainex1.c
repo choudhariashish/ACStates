@@ -12,36 +12,36 @@ State_t st_machine, st_idle, st_running;
 StateMachine_t sm;
 
 
-void st_machine_entry( Event_t ev )
+EventState_t st_machine_entry( Event_t ev )
 {
 }
-void st_machine_inprogress( Event_t ev )
+EventState_t st_machine_inprogress( Event_t ev )
 {
 }
-void st_machine_exit( Event_t ev )
+EventState_t st_machine_exit( Event_t ev )
 {
 }
 
-void st_idle_entry( Event_t ev )
+EventState_t st_idle_entry( Event_t ev )
 {
     printf("st_idle_entry\n");
 }
-void st_idle_inprogress( Event_t ev )
+EventState_t st_idle_inprogress( Event_t ev )
 {
 }
-void st_idle_exit( Event_t ev )
+EventState_t st_idle_exit( Event_t ev )
 {
     printf("st_idle_exit\n");
 }
 
-void st_running_entry( Event_t ev )
+EventState_t st_running_entry( Event_t ev )
 {
     printf("st_running_entry\n");
 }
-void st_running_inprogress( Event_t ev )
+EventState_t st_running_inprogress( Event_t ev )
 {
 }
-void st_running_exit( Event_t ev )
+EventState_t st_running_exit( Event_t ev )
 {
     printf("st_running_exit\n");
 }

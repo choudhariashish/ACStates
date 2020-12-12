@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" name="ex4" qt:editorversion="4.12.2" initial="test">
+    <state id="test" initial="st_idle">
+        <qt:editorinfo scenegeometry="-63.94;-129.95;35.57;47.28;529.46;180.32" geometry="-63.94;-129.95;99.51;177.23;529.46;180.32"/>
+        <state id="st_idle">
+            <qt:editorinfo scenegeometry="116.33;148.10;56.33;98.10;120;100" geometry="180.27;278.05;-60;-50;120;100"/>
+            <transition type="external" event="EV_RUN" target="st_running">
+                <qt:editorinfo endTargetFactors="10.08;48.69"/>
+            </transition>
+        </state>
+        <state id="st_running">
+            <qt:editorinfo scenegeometry="662.66;377.40;602.66;327.40;120;100" geometry="548.97;278.05;-60;-50;120;100"/>
+            <transition type="external" event="EV_STOP" target="st_idle">
+                <qt:editorinfo startTargetFactors="11.58;75.17" movePoint="6.15;11.27" endTargetFactors="84.63;78.71"/>
+            </transition>
+        </state>
+        <qt:metadata>
+            <qt:include>&quot;ACStates.h&quot;</qt:include>
+        </qt:metadata>
+    </state>
+</scxml>

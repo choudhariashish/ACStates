@@ -13,51 +13,51 @@ StateMachine_t sm;
 
 
 // st_machine
-void st_machine_entry( Event_t ev )
+EventState_t st_machine_entry( Event_t ev )
 {
 }
-void st_machine_inprogress( Event_t ev )
+EventState_t st_machine_inprogress( Event_t ev )
 {
 }
-void st_machine_exit( Event_t ev )
+EventState_t st_machine_exit( Event_t ev )
 {
 }
 
 // st_operational
-void st_operational_entry( Event_t ev )
+EventState_t st_operational_entry( Event_t ev )
 {
     printf("st_operational_entry\n");
 }
-void st_operational_inprogress( Event_t ev )
+EventState_t st_operational_inprogress( Event_t ev )
 {
 }
-void st_operational_exit( Event_t ev )
+EventState_t st_operational_exit( Event_t ev )
 {
     printf("st_operational_exit\n");
 }
 
 // st_idle
-void st_idle_entry( Event_t ev )
+EventState_t st_idle_entry( Event_t ev )
 {
     printf("st_idle_entry\n");
 }
-void st_idle_inprogress( Event_t ev )
+EventState_t st_idle_inprogress( Event_t ev )
 {
 }
-void st_idle_exit( Event_t ev )
+EventState_t st_idle_exit( Event_t ev )
 {
     printf("st_idle_exit\n");
 }
 
 // st_running
-void st_running_entry( Event_t ev )
+EventState_t st_running_entry( Event_t ev )
 {
     printf("st_running_entry\n");
 }
-void st_running_inprogress( Event_t ev )
+EventState_t st_running_inprogress( Event_t ev )
 {
 }
-void st_running_exit( Event_t ev )
+EventState_t st_running_exit( Event_t ev )
 {
     printf("st_running_exit\n");
 }
