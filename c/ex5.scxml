@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" name="ex5" qt:editorversion="4.11.1">
+    <state id="machine">
+        <qt:editorinfo scenegeometry="203.82;33.07;49.88;-16.93;930.43;757.37" geometry="203.82;33.07;-153.94;-50;930.43;757.37"/>
+        <state id="st_idle">
+            <qt:editorinfo scenegeometry="259.58;178.63;199.58;128.63;282.01;219.38" geometry="53.70;135.27;-60;-50;282.01;219.38"/>
+            <transition type="external" event="EV_RUN" target="st_run">
+                <qt:editorinfo movePoint="46.47;0" localGeometry="397.08;0.05" endTargetFactors="62.27;3.22"/>
+            </transition>
+            <onentry>
+                <script>int a = 0;
+if (a == 50)
+{
+    a = 55;
+}</script>
+            </onentry>
+            <onexit>
+                <script>int exit = 0;
+if (exit == 100)
+{
+    exit = 100;
+}</script>
+            </onexit>
+        </state>
+        <state id="st_run">
+            <qt:editorinfo scenegeometry="572.46;417.17;389.98;354.97;558.35;369.94" geometry="366.58;373.81;-182.48;-62.20;558.35;369.94"/>
+            <transition type="external" event="EV_STOP" target="st_idle">
+                <qt:editorinfo movePoint="-5.16;-25.82" localGeometry="-362.24;6.64" endTargetFactors="38.06;87.81"/>
+            </transition>
+            <transition type="internal" event="EV_RUN_CHECK_1">
+                <qt:editorinfo endTargetFactors="1.57;33.75"/>
+                <script>int b = 0;
+if (b == 10)
+{
+    b = 25;
+}</script>
+            </transition>
+            <transition type="internal" event="EV_RUN_CHECK_2">
+                <qt:editorinfo endTargetFactors="0.98;38.79"/>
+                <script>int b = 0;
+if (b == 10)
+{
+    b = 25;
+}</script>
+            </transition>
+            <onentry>
+                <script>int a = 0;
+if (a == 50)
+{
+    a = 55;
+}</script>
+            </onentry>
+        </state>
+        <qt:metadata>
+            <qt:include>&quot;ACStates.h&quot;</qt:include>
+        </qt:metadata>
+        <onentry>
+            <script>int machine = 0;
+machine = 12345;
+machine = 54321;</script>
+        </onentry>
+        <onexit>
+            <script/>
+        </onexit>
+    </state>
+</scxml>
