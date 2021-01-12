@@ -68,13 +68,16 @@ void runExitProcedure( StateMachine_t *sm, State_t *state )
 {
     State_t *currState = sm->StateStack[sm->CurrStateIndex];
 
+    Event_t ev;
     while (currState != state)
     {
-        Event_t ev;
         currState->exit(ev);
         sm->CurrStateIndex--;
         currState = sm->StateStack[sm->CurrStateIndex];
     }
+
+    currState->exit(ev);
+    sm->CurrStateIndex--;
 }
 
 State_t *getParentThatHandlesEvent(StateMachine_t *sm, UINT16_t eventId)
