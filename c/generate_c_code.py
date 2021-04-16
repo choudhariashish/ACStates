@@ -79,15 +79,7 @@ class SMCode:
         impl += "// @ACSTAG:INCLUDES:UCODE:END\n\n"
 
 
-        impl += 'ScheduleEventPtr_t scheduleEvent;\n'
-
-
-        impl += 'enum EVENTS\n'
-        impl +='{\n'
-        impl += 4*' '+'EV_DEFAULT_ENTRY'+8*' '+'= EV_DEFAULT_ENTRY_LIB,\n'
-        for event in self.eventDict.keys():
-            impl += 4*' '+event+',\n'
-        impl += '};\n\n'
+        impl += 'ScheduleEventPtr_t scheduleEvent;\n\n'
 
 
         sids = []
@@ -192,7 +184,15 @@ class SMCode:
 
 
         if api_sm_include != '':
-            api += "#include "+ api_sm_include + "\n"
+            api += "#include "+ api_sm_include + "\n\n\n"
+
+
+        api += 'enum EVENTS\n'
+        api +='{\n'
+        api += 4*' '+'EV_DEFAULT_ENTRY'+8*' '+'= EV_DEFAULT_ENTRY_LIB,\n'
+        for event in self.eventDict.keys():
+            api += 4*' '+event+',\n'
+        api += '};\n\n'
 
 
         api += 4 * '\n'

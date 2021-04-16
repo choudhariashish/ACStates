@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 typedef unsigned short UINT16_t;
+typedef unsigned long long UINT64_t;
+
 
 
 // A limit on maximum number of states that a particular
@@ -42,6 +44,7 @@ struct Event
     UINT16_t eventId;
     UINT16_t arg0;
     UINT16_t arg1;
+    UINT64_t msOffset;
 };
 typedef struct Event Event_t;
 typedef EventState_t (*FuncPtr_t)(Event_t);
