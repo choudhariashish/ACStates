@@ -1,42 +1,45 @@
 #include "ACStates.h"
 
 
+//-------------------------------------------------------------------------------------------------------------------/
 /// class TransitionCode implementation.
 
-TransitionCode::TransitionCode()
+TransitionGuard::TransitionGuard()
 {
 }
 
 
-uint8_t TransitionCode::execute()
+TransitionGuard::TransitionGuardStatus_t TransitionGuard::execute()
 {
-    return 0;
+    return TransitionGuardStatus_t::GUARD_CLEAR;
 }
 
 
-/// Transition class that is used internally
-/// by statemachine.
-class Transition
-{
-public:
-
-    Transition(TransitionCode *tc, State *state);
-
-    TransitionCode *mTransitionCode;
-    State *mState;
-};
-
-
+//-------------------------------------------------------------------------------------------------------------------/
 /// class Transition implementation.
 
-
-Transition::Transition(TransitionCode *tc, State *state)
+Transition::Transition()
 {
-    mTransitionCode = tc;
+    mTransitionGuard = NULL;
+    mState = NULL;
+}
+
+
+Transition::Transition(State *state)
+{
+    mTransitionGuard = NULL;
     mState = state;
 }
 
 
+Transition::Transition(TransitionGuard *tc, State *state)
+{
+    mTransitionGuard = tc;
+    mState = state;
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------/
 /// class State implementation.
 
 State::State(std::string name)
@@ -46,34 +49,57 @@ State::State(std::string name)
 }
 
 
-void State::addInitialChild(State *state)
+void State::setInitialChild(State *state)
 {
     mInitialChild = state;
 }
 
 
-void State::entry()
+State* State::getInitialChild()
 {
+    return mInitialChild;
 }
 
 
-void State::exit()
+void State::entry(uint32_t ev, void* msg)
 {
+    printf("%s:entry\n", this->mName.c_str());
 }
 
 
-void State::addTransition(uint32_t ev, TransitionCode *tc, State *state)
+State::EventHandlingStatus_t State::run(uint32_t ev, void* msg)
 {
-    mStateTransition[ev] = new Transition(tc, state);
+    printf("%s:run:%d\n", this->mName.c_str(), ev);
+
+    return EventHandlingStatus_t::EVENT_NOT_HANDLED;
 }
 
 
+void State::exit(uint32_t ev, void* msg)
+{
+    printf("%s:exit\n", this->mName.c_str());
+}
+
+
+void State::addTransition(uint32_t ev, Transition *transition)
+{
+    mStateTransition[ev] = transition;
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------/
 /// class StateMachine implementation.
 
-
-void StateMachine::setInitialState(State *state)
+void StateMachine::setRootState(State *state)
 {
     mCurrState = state;
+    mRootState = mCurrState;
+}
+
+
+State* StateMachine::getRootState()
+{
+    return mRootState;
 }
 
 
@@ -85,17 +111,29 @@ State *StateMachine::getCurrentState()
 
 void StateMachine::start()
 {
-    mCurrState->entry();
+    /// Enter the target state.
+    mCurrState->entry(StateMachine::NO_OP_EVENT, NULL);
+
+    while (NULL != mCurrState->getInitialChild())
+    {
+        mCurrState = mCurrState->getInitialChild();
+        mCurrState->entry(StateMachine::NO_OP_EVENT, NULL);
+    }
 }
 
 
 void StateMachine::addState(State *state, State *parent)
 {
     mStateMap[state] = parent;
+
+    if (NULL != parent)
+    {
+        parent->mChildStates.push_back(state);
+    }
 }
 
 
-void StateMachine::triggerEvent(uint32_t ev)
+void StateMachine::triggerEvent(uint32_t ev, void* msg)
 {
     Transition *transition = mCurrState->mStateTransition[ev];
 
@@ -115,9 +153,9 @@ void StateMachine::triggerEvent(uint32_t ev)
             else                   ///< curr handles this event.
             {
                 uint8_t stateChangeNeeded = 0;
-                if (NULL != transition->mTransitionCode)
+                if (NULL != transition->mTransitionGuard)
                 {
-                    if (1==transition->mTransitionCode->execute())
+                    if (TransitionGuard::TransitionGuardStatus_t::GUARD_CLEAR==transition->mTransitionGuard->execute())
                     {
                         stateChangeNeeded = 1;
                     }
@@ -127,18 +165,23 @@ void StateMachine::triggerEvent(uint32_t ev)
                 /// If we do, then we have to exit all the states in stack till the state
                 /// 'curr' which handles this event.
                 if ( (1==stateChangeNeeded && (NULL != transition->mState))
-                  || (NULL==transition->mTransitionCode && (NULL != transition->mState)))
+                  || (NULL==transition->mTransitionGuard && (NULL != transition->mState)))
                 {
                     State *stateToExit = mCurrState;
                     while (stateToExit != curr)
                     {
-                        stateToExit->exit();
+                        stateToExit->exit(ev, msg);
                         stateToExit = mStateMap[stateToExit];
                     }
 
-                    /// Enter the target state.
-                    transition->mState->entry();
                     mCurrState = transition->mState;
+                    mCurrState->entry(ev, msg);
+
+                    while (NULL != mCurrState->getInitialChild())
+                    {
+                        mCurrState = mCurrState->getInitialChild();
+                        mCurrState->entry(ev, msg);
+                    }
                     return;
                 }
             }
@@ -147,9 +190,9 @@ void StateMachine::triggerEvent(uint32_t ev)
     else                   ///< Current state handles the event.
     {
         uint8_t stateChangeNeeded = 0;
-        if (NULL != transition->mTransitionCode)
+        if (NULL != transition->mTransitionGuard)
         {
-            if (1==transition->mTransitionCode->execute())
+            if (TransitionGuard::TransitionGuardStatus_t::GUARD_CLEAR==transition->mTransitionGuard->execute())
             {
                 stateChangeNeeded = 1;
             }
@@ -158,6 +201,20 @@ void StateMachine::triggerEvent(uint32_t ev)
         {
             stateChangeNeeded = 1;
         }
+        else if (NULL == transition->mTransitionGuard && NULL == transition->mState)    // This is internal transition.
+        {
+            State *curr = mCurrState;
+            while (State::EVENT_NOT_HANDLED == curr->run(ev, msg))
+            {
+                curr = mStateMap[curr];
+                if (NULL == curr)
+                {
+                    return;    // We have reached the root state.
+                }
+            }
+            return;
+        }
+
 
         if (1==stateChangeNeeded)
         {
@@ -165,8 +222,8 @@ void StateMachine::triggerEvent(uint32_t ev)
             /// If yes, then in this case we need to exit and enter the mCurrState.
             if (mCurrState==transition->mState)
             {
-                mCurrState->exit();
-                mCurrState->entry();
+                mCurrState->exit(ev, msg);
+                mCurrState->entry(ev, msg);
 
                 /// We can return here.
                 return;
@@ -187,19 +244,17 @@ void StateMachine::triggerEvent(uint32_t ev)
 
             if (curr==NULL)
             {
-                mCurrState->exit();
+                mCurrState->exit(ev, msg);
             }
 
-
-            transition->mState->entry();
+            /// Enter the target state.
             mCurrState = transition->mState;
+            mCurrState->entry(ev, msg);
 
-            /// Check if the state we just entered has a initial
-            /// child state. If yes, then we need to enter that child too.
-            while (mCurrState->mInitialChild != NULL)
+            while (NULL != mCurrState->getInitialChild())
             {
-                mCurrState->mInitialChild->entry();
-                mCurrState = mCurrState->mInitialChild;
+                mCurrState = mCurrState->getInitialChild();
+                mCurrState->entry(ev, msg);
             }
         }
     }
