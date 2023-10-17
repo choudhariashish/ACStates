@@ -35,17 +35,17 @@ https://www.state-machine.com/qpc/exa.html</documentation>
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
    <!--${AOs::Blinky::SM}-->
    <statechart properties="0x01">
-    <!--${AOs::Blinky::SM::motor_machine}-->
-    <state name="motor_machine">
-     <!--${AOs::Blinky::SM::motor_machine::initial}-->
+    <!--${AOs::Blinky::SM::MotorMachine}-->
+    <state name="MotorMachine">
+     <!--${AOs::Blinky::SM::MotorMachine::initial}-->
      <initial target="../1">
       <initial_glyph conn="13,20,5,3,4">
        <action box="0,-2,10,2"/>
       </initial_glyph>
      </initial>
-     <!--${AOs::Blinky::SM::motor_machine::PowerOffSt}-->
+     <!--${AOs::Blinky::SM::MotorMachine::PowerOffSt}-->
      <state name="PowerOffSt">
-      <!--${AOs::Blinky::SM::motor_machine::PowerOffSt::EV_ON}-->
+      <!--${AOs::Blinky::SM::MotorMachine::PowerOffSt::EV_ON}-->
       <tran trig="EV_ON" target="../../2">
        <tran_glyph conn="33,20,1,3,25">
         <action box="6,-2,10,2"/>
@@ -53,21 +53,21 @@ https://www.state-machine.com/qpc/exa.html</documentation>
       </tran>
       <state_glyph node="17,14,16,14"/>
      </state>
-     <!--${AOs::Blinky::SM::motor_machine::PowerOnSt}-->
+     <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt}-->
      <state name="PowerOnSt">
-      <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::initial}-->
+      <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::initial}-->
       <initial target="../3">
        <initial_glyph conn="64,24,5,3,4">
         <action box="0,-2,10,2"/>
        </initial_glyph>
       </initial>
-      <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::EV_ERROR}-->
+      <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::EV_ERROR}-->
       <tran trig="EV_ERROR" target="../../3">
        <tran_glyph conn="58,50,3,1,-25">
         <action box="-17,-2,10,2"/>
        </tran_glyph>
       </tran>
-      <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::EV_MONITOR_TEMP}-->
+      <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::EV_MONITOR_TEMP}-->
       <tran trig="EV_MONITOR_TEMP">
        <action>IF overtemperature():
     schedEV(EV_ERROR)</action>
@@ -75,9 +75,9 @@ https://www.state-machine.com/qpc/exa.html</documentation>
         <action box="0,-2,22,7"/>
        </tran_glyph>
       </tran>
-      <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::InitializeSt}-->
+      <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::InitializeSt}-->
       <state name="InitializeSt">
-       <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::InitializeSt::EV_READY}-->
+       <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::InitializeSt::EV_READY}-->
        <tran trig="EV_READY" target="../../4">
         <tran_glyph conn="84,24,1,3,19">
          <action box="3,-2,10,2"/>
@@ -85,15 +85,15 @@ https://www.state-machine.com/qpc/exa.html</documentation>
        </tran>
        <state_glyph node="68,18,16,13"/>
       </state>
-      <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::ReadySt}-->
+      <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::ReadySt}-->
       <state name="ReadySt">
-       <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::ReadySt::EV_RUN}-->
+       <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::ReadySt::EV_RUN}-->
        <tran trig="EV_RUN" target="../../5">
         <tran_glyph conn="117,30,2,0,13">
          <action box="-10,7,10,2"/>
         </tran_glyph>
        </tran>
-       <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::ReadySt::EV_MAINTAIN}-->
+       <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::ReadySt::EV_MAINTAIN}-->
        <tran trig="EV_MAINTAIN" target="../../../4/1">
         <tran_glyph conn="126,24,1,3,36">
          <action box="14,-2,14,2"/>
@@ -101,9 +101,9 @@ https://www.state-machine.com/qpc/exa.html</documentation>
        </tran>
        <state_glyph node="103,18,23,12"/>
       </state>
-      <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::RunningSt}-->
+      <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::RunningSt}-->
       <state name="RunningSt">
-       <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::RunningSt::EV_STOP}-->
+       <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::RunningSt::EV_STOP}-->
        <tran trig="EV_STOP" target="../../6">
         <tran_glyph conn="103,50,3,1,-17">
          <action box="-14,-2,10,2"/>
@@ -111,9 +111,9 @@ https://www.state-machine.com/qpc/exa.html</documentation>
        </tran>
        <state_glyph node="103,43,23,14"/>
       </state>
-      <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::StoppingSt}-->
+      <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::StoppingSt}-->
       <state name="StoppingSt">
-       <!--${AOs::Blinky::SM::motor_machine::PowerOnSt::StoppingSt::EV_STOPPED}-->
+       <!--${AOs::Blinky::SM::MotorMachine::PowerOnSt::StoppingSt::EV_STOPPED}-->
        <tran trig="EV_STOPPED" target="../../4">
         <tran_glyph conn="82,43,0,2,-8,28,-5">
          <action box="7,-10,13,2"/>
@@ -123,21 +123,21 @@ https://www.state-machine.com/qpc/exa.html</documentation>
       </state>
       <state_glyph node="58,9,72,57"/>
      </state>
-     <!--${AOs::Blinky::SM::motor_machine::ErrorSt}-->
+     <!--${AOs::Blinky::SM::MotorMachine::ErrorSt}-->
      <state name="ErrorSt">
       <state_glyph node="17,41,16,15"/>
      </state>
-     <!--${AOs::Blinky::SM::motor_machine::MaintainenceSt}-->
+     <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt}-->
      <state name="MaintainenceSt">
-      <!--${AOs::Blinky::SM::motor_machine::MaintainenceSt::EV_OK}-->
+      <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::EV_OK}-->
       <tran trig="EV_OK" target="../../2/4">
        <tran_glyph conn="154,50,3,1,-13,-24,-15">
         <action box="-14,1,10,2"/>
        </tran_glyph>
       </tran>
-      <!--${AOs::Blinky::SM::motor_machine::MaintainenceSt::AMainainSt}-->
+      <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::AMainainSt}-->
       <state name="AMainainSt">
-       <!--${AOs::Blinky::SM::motor_machine::MaintainenceSt::AMainainSt::EV_A_B}-->
+       <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::AMainainSt::EV_A_B}-->
        <tran trig="EV_A_B" target="../../2">
         <tran_glyph conn="174,28,2,0,9">
          <action box="-13,4,10,2"/>
@@ -145,9 +145,9 @@ https://www.state-machine.com/qpc/exa.html</documentation>
        </tran>
        <state_glyph node="162,14,23,14"/>
       </state>
-      <!--${AOs::Blinky::SM::motor_machine::MaintainenceSt::BMainainSt}-->
+      <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::BMainainSt}-->
       <state name="BMainainSt">
-       <!--${AOs::Blinky::SM::motor_machine::MaintainenceSt::BMainainSt::EV_RUN}-->
+       <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::BMainainSt::EV_RUN}-->
        <tran trig="EV_RUN" target="../../../2/5">
         <tran_glyph conn="174,55,2,2,6,-58,-4">
          <action box="-35,3,10,2"/>
