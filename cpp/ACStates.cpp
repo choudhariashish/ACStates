@@ -2,44 +2,6 @@
 
 
 //-------------------------------------------------------------------------------------------------------------------/
-/// class TransitionCode implementation.
-
-TransitionGuard::TransitionGuard()
-{
-}
-
-
-TransitionGuard::TransitionGuardStatus_t TransitionGuard::execute()
-{
-    return TransitionGuardStatus_t::GUARD_CLEAR;
-}
-
-
-//-------------------------------------------------------------------------------------------------------------------/
-/// class Transition implementation.
-
-Transition::Transition()
-{
-    mTransitionGuard = NULL;
-    mState = NULL;
-}
-
-
-Transition::Transition(State *state)
-{
-    mTransitionGuard = NULL;
-    mState = state;
-}
-
-
-Transition::Transition(TransitionGuard *tc, State *state)
-{
-    mTransitionGuard = tc;
-    mState = state;
-}
-
-
-//-------------------------------------------------------------------------------------------------------------------/
 /// class State implementation.
 
 State::State(std::string name)
@@ -81,9 +43,9 @@ void State::exit(uint32_t ev, void* msg)
 }
 
 
-void State::addTransition(uint32_t ev, Transition *transition)
+void State::addTransition(uint32_t ev, State* destState)
 {
-    mStateTransition[ev] = transition;
+    mStateTransition[ev] = destState;
 }
 
 
@@ -135,48 +97,90 @@ void StateMachine::addState(State *state, State *parent)
 
 void StateMachine::triggerEvent(uint32_t ev, void* msg)
 {
-    Transition *transition = mCurrState->mStateTransition[ev];
+    State* destState = mCurrState->mStateTransition[ev];
 
-    if (NULL==transition)  ///< Current state does not handle the event.
-    {                      ///< Look for a state upwards that handles it.
-
+    /// Current state does not handle the event.
+    /// Look for a state upwards that handles it.
+    if (NULL == destState)
+    {
         State *curr = mStateMap[mCurrState];
+
+        /// Go upwards till the root state.
         while (NULL != curr)
         {
-            /// Check if curr handles the event in context.
-            transition = curr->mStateTransition[ev];
+            /// Check if curr state handles the event in context.
+            destState = curr->mStateTransition[ev];
 
-            if (NULL==transition)  ///< curr does not handle this event.
+            if (NULL != destState)  ///< curr state handles this event.
             {
-                curr = mStateMap[curr];
-            }
-            else                   ///< curr handles this event.
-            {
-                uint8_t stateChangeNeeded = 0;
-                if (NULL != transition->mTransitionGuard)
+                /// Perform exit procedure.
+                /// We have to exit all the states in the stack till
+                /// the state 'curr' which handles this event.
+                while (mCurrState != curr)
                 {
-                    if (TransitionGuard::TransitionGuardStatus_t::GUARD_CLEAR==transition->mTransitionGuard->execute())
-                    {
-                        stateChangeNeeded = 1;
-                    }
+                    mCurrState->exit(ev, msg);
+                    mCurrState = mStateMap[mCurrState];
                 }
 
-                /// Check if we need to change state.
-                /// If we do, then we have to exit all the states in stack till the state
-                /// 'curr' which handles this event.
-                if ( (1==stateChangeNeeded && (NULL != transition->mState))
-                  || (NULL==transition->mTransitionGuard && (NULL != transition->mState)))
+                /// Perform entry procedure if curr state
+                /// and dest state has same parent.
+                if (mStateMap[mCurrState] == mStateMap[destState])
                 {
-                    State *stateToExit = mCurrState;
-                    while (stateToExit != curr)
+                    mCurrState->entry(ev, msg);
+                    while (NULL != mCurrState->getInitialChild())
                     {
-                        stateToExit->exit(ev, msg);
-                        stateToExit = mStateMap[stateToExit];
+                        mCurrState = mCurrState->getInitialChild();
+                        mCurrState->entry(ev, msg);
+                    }
+                    return;
+                }
+
+                /// This is a case where curr state and dest state has different parents.
+                /// 1. Find a common parent.
+                /// 2. Run exit procedure till common parent (do not exit common parent).
+                /// 3. Call entry of each state till dest state (do not call entry of common parent).
+                State* commonParent = NULL;
+                State* destParent = mStateMap[destState];
+                std::vector<State*> statesToEnter;
+
+                while (NULL != destParent)
+                {
+                    State* currParent = mStateMap[mCurrState];
+                    while (NULL != currParent)
+                    {
+                        if (currParent == destParent)
+                        {
+                            commonParent = destParent;
+                            break;
+                        }
+                        currParent = mStateMap[currParent];
+                    }
+                    statesToEnter.push_back(destParent);
+                    destParent = mStateMap[destParent];
+                }
+
+                if (NULL != commonParent)
+                {
+                    /// Perform exit procedure.
+                    while (mCurrState != commonParent)
+                    {
+                        mCurrState->exit(ev, msg);
+                        mCurrState = mStateMap[mCurrState];
                     }
 
-                    mCurrState = transition->mState;
-                    mCurrState->entry(ev, msg);
+                    /// Call entry of each state till dest state.
+                    while (statesToEnter.size() > 0)
+                    {
+                        mCurrState = statesToEnter.back();
+                        /// We dont want to call entry function of common parent.
+                        if (commonParent != mCurrState) mCurrState->entry(ev, msg);
+                        statesToEnter.pop_back();
+                    }
 
+                    mCurrState = destState;
+
+                    /// Perform entry procedure.
+                    mCurrState->entry(ev, msg);
                     while (NULL != mCurrState->getInitialChild())
                     {
                         mCurrState = mCurrState->getInitialChild();
@@ -185,77 +189,114 @@ void StateMachine::triggerEvent(uint32_t ev, void* msg)
                     return;
                 }
             }
-        }
-    }
-    else                   ///< Current state handles the event.
-    {
-        uint8_t stateChangeNeeded = 0;
-        if (NULL != transition->mTransitionGuard)
-        {
-            if (TransitionGuard::TransitionGuardStatus_t::GUARD_CLEAR==transition->mTransitionGuard->execute())
-            {
-                stateChangeNeeded = 1;
-            }
-        }
-        else if ( NULL != transition->mState )
-        {
-            stateChangeNeeded = 1;
-        }
-        else if (NULL == transition->mTransitionGuard && NULL == transition->mState)    // This is internal transition.
-        {
-            State *curr = mCurrState;
-            while (State::EVENT_NOT_HANDLED == curr->run(ev, msg))
+
+            /// Curr state does not handle this event. Continue to parent.
+            else
             {
                 curr = mStateMap[curr];
-                if (NULL == curr)
-                {
-                    return;    // We have reached the root state.
-                }
             }
+        }
+    }
+
+    /// Current state handles the event.
+    else
+    {
+        /// Check if the dest state is self state(loopback)
+        /// If yes, then in this case we need to exit and enter the mCurrState.
+        if (mCurrState == destState)
+        {
+            mCurrState->exit(ev, msg);
+            mCurrState->entry(ev, msg);
+
+            /// We can return here.
             return;
         }
 
 
-        if (1==stateChangeNeeded)
+        /// Check if dest state has same parent as mCurrState.
+        /// If so, then exit the mCurrState and enter dest state.
+        if (mStateMap[mCurrState] == mStateMap[destState])
         {
-            /// Check if the state that we are about to enter is self state(loopback)
-            /// If yes, then in this case we need to exit and enter the mCurrState.
-            if (mCurrState==transition->mState)
-            {
-                mCurrState->exit(ev, msg);
-                mCurrState->entry(ev, msg);
-
-                /// We can return here.
-                return;
-            }
-
-            /// Check if the state we are about to enter is mCurrState's child/subchild.
-            /// If yes, then we do not have to exit this state.
-            State *curr = transition->mState;
-
-            while (curr != NULL)
-            {
-                if (curr==mCurrState)
-                {
-                    break;
-                }
-                curr = mStateMap[curr];
-            }
-
-            if (curr==NULL)
-            {
-                mCurrState->exit(ev, msg);
-            }
-
-            /// Enter the target state.
-            mCurrState = transition->mState;
+            mCurrState->exit(ev, msg);
+            mCurrState = destState;
             mCurrState->entry(ev, msg);
 
+            /// Perform entry procedure.
             while (NULL != mCurrState->getInitialChild())
             {
                 mCurrState = mCurrState->getInitialChild();
                 mCurrState->entry(ev, msg);
             }
+            return;
+        }
+
+
+        /// This is a case where curr state and dest state has different parents.
+        /// 1. Find a common parent.
+        /// 2. Run exit procedure till common parent (do not exit common parent).
+        /// 3. Call entry of each state till dest state (do not call entry of common parent).
+        State* commonParent = NULL;
+        State* destParent = mStateMap[destState];
+        std::vector<State*> statesToEnter;
+
+        while (NULL != destParent)
+        {
+            State* currParent = mStateMap[mCurrState];
+            while (NULL != currParent)
+            {
+                if (currParent == destParent)
+                {
+                    commonParent = destParent;
+                    break;
+                }
+                currParent = mStateMap[currParent];
+            }
+            statesToEnter.push_back(destParent);
+            destParent = mStateMap[destParent];
+        }
+
+        if (NULL != commonParent)
+        {
+            /// Perform exit procedure.
+            while (mCurrState != commonParent)
+            {
+                mCurrState->exit(ev, msg);
+                mCurrState = mStateMap[mCurrState];
+            }
+
+            /// Call entry of each state till dest state.
+            while (statesToEnter.size() > 0)
+            {
+                mCurrState = statesToEnter.back();
+                /// We dont want to call entry function of common parent.
+                if (commonParent != mCurrState) mCurrState->entry(ev, msg);
+                statesToEnter.pop_back();
+            }
+
+            mCurrState = destState;
+
+            /// Perform entry procedure.
+            mCurrState->entry(ev, msg);
+            while (NULL != mCurrState->getInitialChild())
+            {
+                mCurrState = mCurrState->getInitialChild();
+                mCurrState->entry(ev, msg);
+            }
+            return;
+        }
+    }
+
+
+    /// This is expected to be an internal transition.
+    /// We will call "run" function of all the states in context till
+    /// any of the state returns EVENT_HANDLED.
+    State *curr = mCurrState;
+    while (State::EVENT_HANDLED != curr->run(ev, msg))
+    {
+        curr = mStateMap[curr];
+        if (NULL == curr)
+        {
+            return;    // We have reached the root state.
         }
     }
 }

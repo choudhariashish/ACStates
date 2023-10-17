@@ -1,7 +1,7 @@
 //-------------------------------------------------------------------------------------------------------------------/
 /// StateMachine library.
 /// A quick, simple, lightweight statemachine library in C++ with dependancy
-/// on only std::map.
+/// on only std library (string, vector, map).
 
 #ifndef ACSTATES_H
 #define ACSTATES_H
@@ -13,43 +13,8 @@
 
 //-------------------------------------------------------------------------------------------------------------------/
 /// Forward declaration.
-class TransitionGuard;
-class Transition;
 class State;
 class StateMachine;
-
-
-//-------------------------------------------------------------------------------------------------------------------/
-/// Transition class to configure guarding code and target state.
-class Transition
-{
-public:
-
-    Transition();
-    Transition(State *state);
-    Transition(TransitionGuard *tc, State *state);
-
-    TransitionGuard *mTransitionGuard;
-    State *mState;
-};
-
-
-//-------------------------------------------------------------------------------------------------------------------/
-/// Base class to serve adding conditional transition code.
-class TransitionGuard
-{
-public:
-
-    /// Constructor.
-    TransitionGuard();
-
-    /// @brief Guard status to define if its clear to make a transition or not.
-    enum TransitionGuardStatus_t { GUARD_CLEAR, GUARD_NOT_CLEAR };
-
-    /// Execute the transition code.
-    /// @return returns if success, EVENT_NOT_HANDLED if fail.
-    virtual TransitionGuard::TransitionGuardStatus_t execute();
-};
 
 
 //-------------------------------------------------------------------------------------------------------------------/
@@ -94,13 +59,11 @@ public:
 
     /// Adds a transition for event.
     /// @param ev event enum.
-    /// @param transition transition object that defines transition guard code
-    ///                   and target state. Specify state as NULL if internal transition.
-    ///                   Specify transition guard as NULL if not needed.
-    void addTransition(uint32_t ev, Transition *transition);
+    /// @param destState destination state.
+    void addTransition(uint32_t ev, State* destState);
 
     ///        event    transition
-    std::map<uint32_t, Transition*> mStateTransition;
+    std::map<uint32_t, State*> mStateTransition;
     std::string mName;
     State *mInitialChild;
     std::vector<State*> mChildStates;
