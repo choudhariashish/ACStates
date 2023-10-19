@@ -135,9 +135,9 @@ https://www.state-machine.com/qpc/exa.html</documentation>
         <action box="-14,1,10,2"/>
        </tran_glyph>
       </tran>
-      <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::AMainainSt}-->
-      <state name="AMainainSt">
-       <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::AMainainSt::EV_A_B}-->
+      <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::AMaintainSt}-->
+      <state name="AMaintainSt">
+       <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::AMaintainSt::EV_A_B}-->
        <tran trig="EV_A_B" target="../../2">
         <tran_glyph conn="174,28,2,0,9">
          <action box="-13,4,10,2"/>
@@ -145,9 +145,9 @@ https://www.state-machine.com/qpc/exa.html</documentation>
        </tran>
        <state_glyph node="162,14,23,14"/>
       </state>
-      <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::BMainainSt}-->
-      <state name="BMainainSt">
-       <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::BMainainSt::EV_RUN}-->
+      <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::BMaintainSt}-->
+      <state name="BMaintainSt">
+       <!--${AOs::Blinky::SM::MotorMachine::MaintainenceSt::BMaintainSt::EV_RUN}-->
        <tran trig="EV_RUN" target="../../../2/5">
         <tran_glyph conn="174,55,2,2,6,-58,-4">
          <action box="-35,3,10,2"/>
