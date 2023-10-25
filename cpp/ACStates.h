@@ -100,7 +100,8 @@ public:
     /// Triggers statemachine event.
     /// @param ev event enum.
     /// @param msg user specific message.
-    void triggerEvent(uint32_t ev, void* msg=NULL);
+    /// @return State::EventHandlingStatus_t if event was handled or not.
+    State::EventHandlingStatus_t triggerEvent(uint32_t ev, void* msg=NULL);
 
     /// Events that are used by statemachine internally.
     enum InternalEvent_t { NO_OP_EVENT };

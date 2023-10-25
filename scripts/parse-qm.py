@@ -262,7 +262,7 @@ def generateCode(smName, states):
     apifile.append('public:')
     apifile.append(' '*4 + 'int initialize(void);')
     apifile.append(' '*4 + 'int start(void);')
-    apifile.append(' '*4 + 'int triggerEv(uint32_t ev, void* msg=NULL);')
+    apifile.append(' '*4 + 'State::EventHandlingStatus_t triggerEv(uint32_t ev, void* msg=NULL);')
     apifile.append('};\n')
     apifile.append(f'#endif    // _{apiGuard}_H_')
 
@@ -330,10 +330,9 @@ def generateCode(smName, states):
 
 
     #----------------------------------------------------------------------------
-    srcfile.append(f'int {smClassName}::triggerEv(uint32_t ev, void* msg)')
+    srcfile.append(f'State::EventHandlingStatus_t {smClassName}::triggerEv(uint32_t ev, void* msg)')
     srcfile.append('{')
-    srcfile.append('    StateMachine_.triggerEvent(ev, msg);')
-    srcfile.append('    return 1;')
+    srcfile.append('    return StateMachine_.triggerEvent(ev, msg);')
     srcfile.append('}\n\n')
 
     for line in srcfile:
@@ -378,7 +377,7 @@ def generateCode(smName, states):
     testfile.append(f'    {smClassName} sm;')
     testfile.append(f'    sm.initialize();')
     testfile.append(f'    sm.start();')
-    testfile.append('    return 0;')
+    testfile.append(f'    return 0;')
     testfile.append('}')
 
     with open(f'{smClassName}.h', 'w') as api:

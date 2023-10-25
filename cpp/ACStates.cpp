@@ -4,6 +4,8 @@
 //-------------------------------------------------------------------------------------------------------------------/
 /// class State implementation.
 
+#define DEBUG_PRINT
+
 State::State(std::string name)
 {
     mName = name;
@@ -25,21 +27,26 @@ State* State::getInitialChild()
 
 void State::entry(uint32_t ev, void* msg)
 {
+#ifdef DEBUG_PRINT
     printf("%s:entry\n", this->mName.c_str());
+#endif
 }
 
 
 State::EventHandlingStatus_t State::run(uint32_t ev, void* msg)
 {
+#ifdef DEBUG_PRINT
     printf("%s:run:%d\n", this->mName.c_str(), ev);
-
+#endif
     return EventHandlingStatus_t::EVENT_NOT_HANDLED;
 }
 
 
 void State::exit(uint32_t ev, void* msg)
 {
+#ifdef DEBUG_PRINT
     printf("%s:exit\n", this->mName.c_str());
+#endif
 }
 
 
@@ -95,7 +102,7 @@ void StateMachine::addState(State *state, State *parent)
 }
 
 
-void StateMachine::triggerEvent(uint32_t ev, void* msg)
+State::EventHandlingStatus_t StateMachine::triggerEvent(uint32_t ev, void* msg)
 {
     State* destState = mCurrState->mStateTransition[ev];
 
@@ -132,7 +139,7 @@ void StateMachine::triggerEvent(uint32_t ev, void* msg)
                         mCurrState = mCurrState->getInitialChild();
                         mCurrState->entry(ev, msg);
                     }
-                    return;
+                    return State::EVENT_HANDLED;
                 }
 
                 /// This is a case where curr state and dest state has different parents.
@@ -186,7 +193,7 @@ void StateMachine::triggerEvent(uint32_t ev, void* msg)
                         mCurrState = mCurrState->getInitialChild();
                         mCurrState->entry(ev, msg);
                     }
-                    return;
+                    return State::EVENT_HANDLED;
                 }
             }
 
@@ -209,7 +216,7 @@ void StateMachine::triggerEvent(uint32_t ev, void* msg)
             mCurrState->entry(ev, msg);
 
             /// We can return here.
-            return;
+            return State::EVENT_HANDLED;
         }
 
 
@@ -227,7 +234,7 @@ void StateMachine::triggerEvent(uint32_t ev, void* msg)
                 mCurrState = mCurrState->getInitialChild();
                 mCurrState->entry(ev, msg);
             }
-            return;
+            return State::EVENT_HANDLED;
         }
 
 
@@ -282,7 +289,7 @@ void StateMachine::triggerEvent(uint32_t ev, void* msg)
                 mCurrState = mCurrState->getInitialChild();
                 mCurrState->entry(ev, msg);
             }
-            return;
+            return State::EVENT_HANDLED;
         }
     }
 
@@ -291,12 +298,20 @@ void StateMachine::triggerEvent(uint32_t ev, void* msg)
     /// We will call "run" function of all the states in context till
     /// any of the state returns EVENT_HANDLED.
     State *curr = mCurrState;
-    while (State::EVENT_HANDLED != curr->run(ev, msg))
+    while (1)
     {
+        if (State::EVENT_HANDLED == curr->run(ev, msg))
+        {
+            return State::EVENT_HANDLED;
+        }
+
         curr = mStateMap[curr];
         if (NULL == curr)
         {
-            return;    // We have reached the root state.
+            return State::EVENT_NOT_HANDLED;    // We have reached the root state and have not found any state handling this event.
         }
     }
+
+    // We will never come here.
+    return State::EVENT_NOT_HANDLED;
 }
